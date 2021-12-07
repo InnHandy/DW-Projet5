@@ -24,7 +24,7 @@ fetch("http://localhost:3000/api/products/107fb5b75607497b96722bda5b504926")
     
 
     
-    let class_img = document.getElementById("Imaje");
+    let class_img = document.getElementsByClassName("item__img")[0];
     const newImage = document.createElement("img");
     newImage.src = product.imageUrl;
     newImage.alt = product.altTxt;
@@ -40,4 +40,31 @@ fetch("http://localhost:3000/api/products/107fb5b75607497b96722bda5b504926")
     
 
     
-  })
+  });
+
+let cliquer = document.getElementById("addToCart");
+
+let x1 = document.getElementById("quantity");
+
+let x2 = document.getElementById("colors");
+
+
+localStorage.clear();
+
+let clicks = 0;
+
+
+cliquer.setAttribute('onclick', "alerter()");
+
+function alerter() {
+
+  if (x1.value ==0 || x2.value=="" ){
+    alert("veuillez renseigner la couleur ou une quantité")
+  }
+  else { let y = x1.value;let z = x2.value; let newCouleur = 'couleur'+ String(clicks); let newNombre = 'nombre'+ String(clicks); localStorage.setItem(newCouleur, z);
+  localStorage.setItem(newNombre, y); }
+  clicks += 1
+};
+monStockage= localStorage;
+
+
