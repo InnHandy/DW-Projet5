@@ -1,9 +1,9 @@
-var url1= window.location.search;
-var str = "http://127.0.0.1:5500/front/html/product.html?id=107fb5b75607497b96722bda5b504926";
-var url = new URL(str);
+var url1= window.location.href;
+var url = new URL(url1);
 var id = url.searchParams.get("id");
+var fetch_url = "http://localhost:3000/api/products/" + id ;
 
-fetch("http://localhost:3000/api/products/107fb5b75607497b96722bda5b504926")
+fetch(fetch_url)
   .then(function(res) {
     if (res.ok) {
       return res.json();
@@ -37,9 +37,7 @@ fetch("http://localhost:3000/api/products/107fb5b75607497b96722bda5b504926")
         colors_items.appendChild(newOption);
     };
 
-    
-
-    
+  
   });
 
 let cliquer = document.getElementById("addToCart");
@@ -66,5 +64,10 @@ function alerter() {
   clicks += 1
 };
 monStockage= localStorage;
+
+let panierKey = Object.keys(monStockage);
+
+
+
 
 
