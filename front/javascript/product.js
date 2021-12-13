@@ -3,6 +3,8 @@ var url = new URL(url1);
 var id = url.searchParams.get("id");
 var fetch_url = "http://localhost:3000/api/products/" + id ;
 
+let product_item = null;
+
 fetch(fetch_url)
   .then(function(res) {
     if (res.ok) {
@@ -10,7 +12,8 @@ fetch(fetch_url)
     }
   })
   .then(function(product){
-    
+    product_item = product;
+
     let newTitle = document.getElementById("title");
     newTitle.innerHTML = product.name;
 
@@ -37,7 +40,13 @@ fetch(fetch_url)
         colors_items.appendChild(newOption);
     };
 
-  
+    //color = product.colors[i]
+      /*
+    product.colors.forEach(function (color) {
+
+    })*/
+
+
   });
 
 let cliquer = document.getElementById("addToCart");
@@ -47,13 +56,45 @@ let x1 = document.getElementById("quantity");
 let x2 = document.getElementById("colors");
 
 
-localStorage.clear();
+//localStorage.clear();
 
 let clicks = 0;
 
 
 cliquer.setAttribute('onclick', "alerter()");
 
+function alerter() {
+    if (x1.value ==0 || x2.value=="" ){
+        alert("veuillez renseigner la couleur ou une quantité")
+    }
+    else {
+        //"1" + 1 = "11";
+        let quantity = parseInt(x1.value); //string
+        let color    = x2.value;
+        if(product_item != null) {
+            let key = product_item._id + '_' + color; //id unique de mon produit + la liste des attributs (couleur du kanap)
+
+            if(localStorage.getItem(key) !== null) {
+                let ligne_de_panier = JSON.parse(localStorage.getItem(key));
+                ligne_de_panier.quantity += quantity;
+                localStorage.setItem(key, JSON.stringify(ligne_de_panier));
+            }
+            else {
+                let ligne_de_panier = {
+                    quantity: quantity,
+                    color: color,
+                    id: product_item._id
+                }
+                localStorage.setItem(key, JSON.stringify(ligne_de_panier));
+            }
+        }
+        alert("Votre kanap a bien été ajouté au panier :)");
+    }
+
+
+}
+
+/*
 function alerter() {
 
   if (x1.value ==0 || x2.value=="" ){
@@ -65,7 +106,7 @@ function alerter() {
 };
 monStockage= localStorage;
 
-let panierKey = Object.keys(monStockage);
+let panierKey = Object.keys(monStockage);*/
 
 
 
