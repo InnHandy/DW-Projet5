@@ -72,7 +72,7 @@ function alerter() {
         let quantity = parseInt(x1.value); //string
         let color    = x2.value;
         if(product_item != null) {
-            let key = product_item._id + '_' + color; //id unique de mon produit + la liste des attributs (couleur du kanap)
+            let key = product_item._id + '_' + color + '_' + product_item.price; //id unique de mon produit + la liste des attributs (couleur du kanap)
 
             if(localStorage.getItem(key) !== null) {
                 let ligne_de_panier = JSON.parse(localStorage.getItem(key));
