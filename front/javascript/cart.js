@@ -1,63 +1,52 @@
+//Affichage des articles dans le panier calcul du Nombre total d'articles et du prix total du panier
+
 let totalArticles = 0;
 let prixTotal = 0;
 
-let newTotalQuantity = document.getElementById("totalQuantity"); //let span_article
+let newTotalQuantity = document.getElementById("totalQuantity"); 
 let newTotalPrice = document.getElementById("totalPrice");
-
-
-
-
 
 Object.keys(localStorage).forEach(function(key) {
   let ligne_de_panier = JSON.parse(localStorage.getItem(key));
   totalArticles += parseInt(ligne_de_panier.quantity); 
   prixTotal += ligne_de_panier.price * ligne_de_panier.quantity;
-  //var tab = key.split("_");
-  //prixTotal += ligne_de_panier.quantity * parseInt(tab[2]) ;
-  
   var fetch_url = "http://localhost:3000/api/products/" + ligne_de_panier.id ;
-  fetch(fetch_url)
+  fetch(fetch_url) 
   .then(function(res) {
       if (res.ok) {
-      return res.json();
+        return res.json();
       }
   })
   .then(function(product_item){
-  //console.log(product_item.price);
-  //console.log(ligne_de_panier.quantity);
+    let items = document.getElementById("cart__items");
 
-//prixTotal += product_item.price * ligne_de_panier.quantity;
+    let article = document.createElement("article");
+    article.classList = "cart__item";
+    article.dataset.id = ligne_de_panier.id;
+    article.dataset.color = ligne_de_panier.color;
+    
 
+    items.appendChild(article);
 
-  let items = document.getElementById("cart__items");
+    let divImage = document.createElement("div");
+    divImage.classList = "cart__item__img";
 
-  let article = document.createElement("article");
-  article.classList = "cart__item";
-  article.dataset.id = ligne_de_panier.id;
-  article.dataset.color = ligne_de_panier.color;
-  
-
-  items.appendChild(article);
-
-  let divImage = document.createElement("div");
-  divImage.classList = "cart__item__img";
-
-  const newImage = document.createElement("img");
+    const newImage = document.createElement("img");
     newImage.src = product_item.imageUrl;
     newImage.alt = product_item.altTxt;
 
-  divImage.appendChild(newImage);
+    divImage.appendChild(newImage);
 
 
-  let divContent = document.createElement("div");
-  divContent.classList = "cart__item__content";
+    let divContent = document.createElement("div");
+    divContent.classList = "cart__item__content";
 
-  let divContentDescription = document.createElement("div");
-  divContent.classList = "cart__item__content__description";
+    let divContentDescription = document.createElement("div");
+    divContent.classList = "cart__item__content__description";
 
-  divContent.appendChild(divContentDescription);
+    divContent.appendChild(divContentDescription);
 
-  const newH2 = document.createElement("h2");
+    const newH2 = document.createElement("h2");
     newH2.className = "productName";
     newH2.innerHTML = product_item.name;
 
@@ -76,9 +65,6 @@ Object.keys(localStorage).forEach(function(key) {
     divContentSettings.classList = "cart__item__content__settings";
 
     divContent.appendChild(divContentSettings);
-
-
-
 
     let divContentSettingsQuantity = document.createElement("div");
     divContentSettings.classList = "cart__item__content__settings__quantity";
@@ -122,23 +108,27 @@ Object.keys(localStorage).forEach(function(key) {
 
     newTotalQuantity.innerHTML = totalArticles;
     newTotalPrice.innerHTML = prixTotal;
+    });
+ 
 });
 
-  
-      
-    });
+function updateQuantity(e) {    //fonction permettant de mettre à jour la quantité saisie dans le panier
+    let a= this.dataset.id;
+    let idString = a.toString();
+    console.log(idString);
+    let b= this.dataset.color;
+    let colorString = b.toString();
+    let ligne_de_panier = JSON.parse(localStorage.getItem(idString +'_'+ colorString));
+    localStorage.removeItem(idString +'_'+ colorString);
+    ligne_de_panier.quantity = this.value;
+    localStorage.setItem(idString +'_'+ colorString, JSON.stringify(ligne_de_panier));
+    updateTotalPriceAndQuantity() // fonction mettant à jour la quantité totale et le prix total
+}
 
-function updateQuantity(e) {
-  /*
-        1. récupérer la ligne du panier qui est modifier
-            this.dataset.id + this.dataset.color à chercher dans le localStorage
-        2. Mettre à jour la ligne de panier dans le localStorage
-        3. Sauvegarder dans le localStorage la ligne de panier à jour
-        4. Mettre à jour le prix total + total article du panier
-     */
-   // console.log(this.value);
-    //console.log(this.dataset.id);
-    //console.log(this.dataset.color);
+function deleteRow(e) { //fonction permettant de supprimer une ligne dans le panier
+    console.log(this.parentElement.parentElement.parentElement.parentElement);
+    console.log(this.dataset.id);
+    console.log(this.dataset.color);
     let a= this.dataset.id;
     let idString = a.toString();
     console.log(idString);
@@ -147,15 +137,18 @@ function updateQuantity(e) {
     //console.log(colorString);
     let ligne_de_panier = JSON.parse(localStorage.getItem(idString +'_'+ colorString));
     localStorage.removeItem(idString +'_'+ colorString);
-    ligne_de_panier.quantity = this.value;
-    localStorage.setItem(idString +'_'+ colorString, JSON.stringify(ligne_de_panier));
+    document.querySelector('article[data-id="'+idString+'"]').remove();
+    updateTotalPriceAndQuantity();
+}
+
+function updateTotalPriceAndQuantity() { //fonction calculant le prix total et le nombre total d'articles
     let new_prixTotal = 0;
     let new_totalArticles = 0;
-    
+
     Object.keys(localStorage).forEach(function(key) {
-      let ligne_de_panier_bis = JSON.parse(localStorage.getItem(key));
-      new_totalArticles += parseInt(ligne_de_panier_bis.quantity);
-      new_prixTotal += ligne_de_panier_bis.price * ligne_de_panier_bis.quantity;
+        let ligne_de_panier_bis = JSON.parse(localStorage.getItem(key));
+        new_totalArticles += parseInt(ligne_de_panier_bis.quantity);
+        new_prixTotal += ligne_de_panier_bis.price * ligne_de_panier_bis.quantity;
     });
 
     prixTotal = new_prixTotal;
@@ -164,147 +157,134 @@ function updateQuantity(e) {
     newTotalPrice.innerHTML = prixTotal;
 }
 
-function deleteRow(e) {
-        /*
-        1. récupérer la ligne du panier qui est modifier
-            this.dataset.id + this.dataset.color à chercher dans le localStorage
-            2. Supprime la l'élement HTML <article> de la ligne du panier
-            3. supprimer la ligne du panier du localStorage
-            4. Mettre à jour le prix total + total article du panier
-         */
-            
-            console.log(this.parentElement.parentElement.parentElement.parentElement);
-            console.log(this.dataset.id);
-            console.log(this.dataset.color);
-            let a= this.dataset.id;
-            let idString = a.toString();
-            console.log(idString);
-            let b= this.dataset.color;
-            let colorString = b.toString();
-            //console.log(colorString);
-            let ligne_de_panier = JSON.parse(localStorage.getItem(idString +'_'+ colorString));
-            localStorage.removeItem(idString +'_'+ colorString);
-            this.parentElement.parentElement.parentElement.parentElement.remove();
-              
-            
-            
-            localStorage.removeItem(this.dataset.id +'_'+ this.dataset.color);
-            let new_prixTotal = 0;
-            let new_totalArticles = 0;
-    
-            Object.keys(localStorage).forEach(function(key) {
-              let ligne_de_panier_bis = JSON.parse(localStorage.getItem(key));
-              new_totalArticles += parseInt(ligne_de_panier_bis.quantity);
-              new_prixTotal += ligne_de_panier_bis.price * ligne_de_panier_bis.quantity;
-            });
 
-            prixTotal = new_prixTotal;
-            totalArticles = new_totalArticles;
-            newTotalQuantity.innerHTML = totalArticles;
-            newTotalPrice.innerHTML = prixTotal;}
-    
 
+//variables regex pour valider le format
+
+let nomRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]*$/;
+let prenomRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]*$/;
+let adresseRegex = /([-0-9çéà'a-zA-Z,\. ]*)?([0-9]{5})?([a-zA-Z]*)/;
+let villeRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]*$/;
+let adresseMailRegex = /^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,4})$/;
+
+
+
+//Validation formulaire 
 
 const validation = document.getElementsByClassName("cart__order__form")[0];
-var prenom = document.getElementById("firstName").value;
-var nom = document.getElementById("lastName").value;
-var adresse = document.getElementById("address").value;
-var ville = document.getElementById("city").value;
-var adresseMail = document.getElementById("email").value;
-function valider(){
-  // Storing Field Values In Variables
-  if(prenom.match(/^([a-zA-Z])$/) && nom.match(/^([a-zA-Z])$/) && adresse.match(/([0-9a-zA-Z])/) && ville.match(/^([a-zA-Z])$/) && adresseMail.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)){alert('Entrées correctes !');}
-  else { alert("Veuillez remplir correctement le formulaire s'il vous plait ! ")}
+validation.addEventListener("submit", valider);
+
+
+function valider(e){ // fonction validant les données saisies dans le formulaire avec messages d'erreur
+    e.preventDefault();
+    let prenom = document.getElementById("firstName").value;
+    let nom = document.getElementById("lastName").value;
+    let adresse = document.getElementById("address").value;
+    let ville = document.getElementById("city").value;
+    let adresseMail = document.getElementById("email").value;
+   
+    if(prenomRegex.test(prenom))  { alert("prénom bien rempli");}
+    else{ 
+        alert("Erreur, veuillez saisir un prénom composé de lettres et quelques caractères spéciaux")  
+        document.getElementById("firstNameErrorMsg").innerHTML = "Erreur, veuillez saisir un prénom composé de lettres et quelques caractères spéciaux";
+        return false;
+    };
+
+    if(nomRegex.test(nom))  { alert("nom bien rempli");}
+    else{ 
+        alert("Erreur, veuillez saisir un nom composé de lettres et quelques caractères spéciaux")  
+        document.getElementById("lastNameErrorMsg").innerHTML = "Erreur, veuillez saisir un nom composé de lettres et quelques caractères spéciaux";
+        return false;
+    };
+
+    if(adresseRegex.test(adresse))  { alert("adresse bien remplie");}
+    else{ 
+        alert("Erreur, veuillez saisir une adresse valide");
+        document.getElementById("addressErrorMsg").innerHTML = "Erreur, veuillez saisir une adresse valide";
+        return false;
+        };
+
+    if(villeRegex.test(ville) ) { alert("ville bien remplie");}
+    else{ 
+        alert("Erreur, veuillez saisir une adresse valide");
+        document.getElementById("cityErrorMsg").innerHTML = "Erreur, veuillez saisir une ville valide";
+        return false;
+    };
+
+    if(adresseMailRegex.test(adresseMail))  { alert("email bien rempli");}
+    else{ 
+        alert("Erreur, veuillez saisir une adresse email valide")  
+        document.getElementById("emailErrorMsg").innerHTML = "Erreur, veuillez saisir une adresse email valide";
+        return false;
+    };
+    
+    if (prenomRegex.test(prenom) && nomRegex.test(nom) && adresseRegex.test(adresse) && villeRegex.test(ville) && adresseMailRegex.test(adresseMail) )
+    {
+        validateOrder();
+    }
+    else { alert("Veuillez remplir correctement le formulaire s'il vous plait ! ");
+                document.getElementById("firstNameErrorMsg").innerHTML = "";
+                document.getElementById("lastNameErrorMsg").innerHTML = "";
+                document.getElementById("addressErrorMsg").innerHTML = "";
+                document.getElementById("cityErrorMsg").innerHTML = "";
+                document.getElementById("emailErrorMsg").innerHTML = "";
+    };
 }
 
-validation.onsubmit = "return valider()"
 
-let produitsId = [];
-Object.values(localStorage).forEach(function(objet){
 
-let JSONobjet = JSON.parse(objet);
-produitsId = produitsId.concat([JSONobjet.id]) ;
-});
 
-/*
-fetch("http://localhost:3000/api/products/order", {
-      method:'post',
-      referrer: "http://localhost:3000/api/products/order",
-      referrerPolicy: "no-referrer-when-downgrade",
-      body: JSON.stringify({
-        "contact": {
-              "firstName": prenom,
-              "lastName": nom,
-              "address": adresse,
-              "ville": ville,
-              "email": adresseMail
+
+
+function validateOrder() {   //fonction de validation de la commande
+
+    let prenom = document.getElementById("firstName").value;
+    let nom = document.getElementById("lastName").value;
+    let adresse = document.getElementById("address").value;
+    let ville = document.getElementById("city").value;
+    let adresseMail = document.getElementById("email").value;
+
+    let produitsId = [];
+    Object.values(localStorage).forEach(function(objet){
+        let JSONobjet = JSON.parse(objet);
+        //produitsId = produitsId.concat([JSONobjet.id]) ;
+        produitsId.push(JSONobjet.id)
+    });
+
+    fetch("http://localhost:3000/api/products/order", { // envoi requete post pour obtenir l'orderId
+        method: 'post',
+        body: JSON.stringify({
+            "contact": {
+                "firstName": prenom,
+                "lastName": nom,
+                "address": adresse,
+                "city": ville,
+                "email": adresseMail
             },
             "products": produitsId,
-          }),
-      headers: {
-  'Accept': 'application/json', 
-        "Content-type": "application/json; charset=UTF-8"
-                }
-})
-.then(function(res) {
-  if (res.status==200) {
-  return res.json();
-  }
-else{ return "Erreur 404"}
-})
-.then(function(value) {
-  console.log(value);
-})
-.catch(function(err) {
-  // Une erreur est survenue
-});*/
-
-/*
-Pour la commande :
-1. Vérifier sir tous les champs sont bien remplie
-
-envoyer une requete HTTP POST vers http://localhost:3000/api/order avec le body ayant cette structure en JSON :*/
-/**
-  *
-  * Expects request to contain:
-  * contact: {
-  *   firstName: string,
-  *   lastName: string,
-  *   address: string,
-  *   city: string,
-  *   email: string
-  * }
-  * products: [string] <-- array of product _id
-  *
-  */
-
-/*
-Récupérer l'orderId en réponse si http 201
-http 400 en cas d'erreur
-fetch("https://jsonplaceholder.typicode.com/posts", {
-
-    // Adding method type
-    method: "POST",
-
-    // Adding body or contents to send
-    body: JSON.stringify({
-        title: "foo",
-        body: "bar",
-        userId: 1
-    }),
-
-    // Adding headers to the request
-    headers: {
-        "Content-type": "application/json; charset=UTF-8"
-    }
-})
-
-*/
-/*
-const commander = document.getElementById("order")
-commander.addEventListener("click", changeURL());
-function changeURL (e){
-  e.preventdefault();
-  window.location.assign(window.location.origin + '/front/html/confirmation.html');
+        }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json; charset=UTF-8'
+        },
+        })
+        .then(function (res) {
+            if (res.ok) {
+                return res.json();
+            } else {
+                console.log("Erreur");
+            }
+        })
+        .then(function (response) {
+            console.log(response);
+            console.log(response.orderId);
+            let orderIdToStringify = response.orderId;
+            window.location.assign(window.location.origin + '/front/html/confirmation.html?id='+ orderIdToStringify.toString());
+            
+            }
+        )
+        .catch(function (err) {
+            // Une erreur est survenue
+        });
 }
-*/
+

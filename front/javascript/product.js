@@ -5,7 +5,7 @@ var fetch_url = "http://localhost:3000/api/products/" + id ;
 
 let product_item = null;
 
-fetch(fetch_url)
+fetch(fetch_url) // Envoi d'une requete GET à l'API pour afficher le produit
   .then(function(res) {
     if (res.ok) {
       return res.json();
@@ -25,8 +25,6 @@ fetch(fetch_url)
 
     let colors_items = document.getElementById("colors");
     
-
-    
     let class_img = document.getElementsByClassName("item__img")[0];
     const newImage = document.createElement("img");
     newImage.src = product.imageUrl;
@@ -39,31 +37,15 @@ fetch(fetch_url)
         newOption.innerHTML = product.colors[i];
         colors_items.appendChild(newOption);
     };
-
-    //color = product.colors[i]
-      /*
-    product.colors.forEach(function (color) {
-
-    })*/
-
-
   });
 
 let cliquer = document.getElementById("addToCart");
-
 let x1 = document.getElementById("quantity");
-
 let x2 = document.getElementById("colors");
-
-
-//localStorage.clear();
-
-let clicks = 0;
-
 
 cliquer.setAttribute('onclick', "alerter()");
 
-function alerter() {
+function alerter() { //fonction assurant le choix d'une couleur et d'une quantité pour un ajout dans le panier
     if (x1.value ==0 || x2.value=="" ){
         alert("veuillez renseigner la couleur ou une quantité")
     }
@@ -94,21 +76,6 @@ function alerter() {
 
 
 }
-
-/*
-function alerter() {
-
-  if (x1.value ==0 || x2.value=="" ){
-    alert("veuillez renseigner la couleur ou une quantité")
-  }
-  else { let y = x1.value;let z = x2.value; let newCouleur = 'couleur'+ String(clicks); let newNombre = 'nombre'+ String(clicks); localStorage.setItem(newCouleur, z);
-  localStorage.setItem(newNombre, y); }
-  clicks += 1
-};
-monStockage= localStorage;
-
-let panierKey = Object.keys(monStockage);*/
-
 
 
 

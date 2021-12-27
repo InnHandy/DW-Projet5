@@ -1,25 +1,11 @@
-/*const newElt1 = document.createElement("a");
-const newElt2 = document.createElement("article");
-const newElt3 = document.createElement("img");
-const newElt4 = document.createElement("h3");
-const newElt5 = document.createElement("p");
 
-
-
-elt.appendChild(newElt1);
-newElt1.appendChild(newElt2);
-newElt2.appendChild(newElt3,newElt4,newElt5);*/
-
-
-
-fetch("http://localhost:3000/api/products")
-  .then(function(res) {
+fetch("http://localhost:3000/api/products")  // fonction permettant d'envoyer une requete à l'API et récupérer des données de l'API
+  .then(function(res){
     if (res.ok) {
-      return res.json();
+      return res.json(); // On récupère les données au format JSON
     }
   })
-  .then(function(products) {
-
+  .then(function(products) {  //Création des différents composants d'un produit et rajout sur la page grâce au DOM
       products.forEach(function (product) {
           let section_items = document.getElementById("items");
 
@@ -46,28 +32,7 @@ fetch("http://localhost:3000/api/products")
           newArticle.appendChild(newP);
 
           section_items.appendChild(newA);
-
-          /*section_items.innerHTML +=
-              '  <a href="./product.html?id=42">\n' +
-              '            <article>\n' +
-              '              <img src="'+ product.imageUrl +'" alt="'+ product.altTxt +'">\n' +
-              '              <h3 class="productName">'+ product.name +'</h3>\n' +
-              '              <p class="productDescription">'+ product.description +'</p>\n' +
-              '            </article>\n' +
-              '          </a>';*/
       });
   });
 
-    /*for (var i = 0; i < products.length; i++){
 
-    let product = products[i];
-    let elt= document.getElementById("items");
-    elt.innerHTML +=  
-    '  <a href="./product.html?id=42">\n' +
-    '            <article>\n' +
-    '              <img src="'+ product.imageUrl +'" alt="'+ product.altTxt +'">\n' +
-    '              <h3 class="productName">'+ product.name +'</h3>\n' +
-    '              <p class="productDescription">'+ product.description +'</p>\n' +
-    '            </article>\n' +
-    '          </a>';
-  })*/
