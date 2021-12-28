@@ -182,53 +182,47 @@ function valider(e){ // fonction validant les données saisies dans le formulair
     let adresse = document.getElementById("address").value;
     let ville = document.getElementById("city").value;
     let adresseMail = document.getElementById("email").value;
+
+    let erreur = false;
+    document.getElementById("firstNameErrorMsg").innerHTML = "";
+    document.getElementById("lastNameErrorMsg").innerHTML = "";
+    document.getElementById("addressErrorMsg").innerHTML = "";
+    document.getElementById("cityErrorMsg").innerHTML = "";
+    document.getElementById("emailErrorMsg").innerHTML = "";
    
-    if(prenomRegex.test(prenom))  { alert("prénom bien rempli");}
-    else{ 
-        alert("Erreur, veuillez saisir un prénom composé de lettres et quelques caractères spéciaux")  
+    if(!prenomRegex.test(prenom))
+    {
         document.getElementById("firstNameErrorMsg").innerHTML = "Erreur, veuillez saisir un prénom composé de lettres et quelques caractères spéciaux";
-        return false;
-    };
+        erreur = true;
+    }
 
-    if(nomRegex.test(nom))  { alert("nom bien rempli");}
-    else{ 
-        alert("Erreur, veuillez saisir un nom composé de lettres et quelques caractères spéciaux")  
+    if(!nomRegex.test(nom))
+    {
         document.getElementById("lastNameErrorMsg").innerHTML = "Erreur, veuillez saisir un nom composé de lettres et quelques caractères spéciaux";
-        return false;
-    };
+        erreur = true;
+    }
 
-    if(adresseRegex.test(adresse))  { alert("adresse bien remplie");}
-    else{ 
-        alert("Erreur, veuillez saisir une adresse valide");
+    if(!adresseRegex.test(adresse))
+    {
         document.getElementById("addressErrorMsg").innerHTML = "Erreur, veuillez saisir une adresse valide";
-        return false;
-        };
+    }
 
-    if(villeRegex.test(ville) ) { alert("ville bien remplie");}
-    else{ 
-        alert("Erreur, veuillez saisir une adresse valide");
+    if(!villeRegex.test(ville) )
+    {
         document.getElementById("cityErrorMsg").innerHTML = "Erreur, veuillez saisir une ville valide";
-        return false;
-    };
+        erreur = true;
+    }
 
-    if(adresseMailRegex.test(adresseMail))  { alert("email bien rempli");}
-    else{ 
-        alert("Erreur, veuillez saisir une adresse email valide")  
+    if(!adresseMailRegex.test(adresseMail))
+    {
         document.getElementById("emailErrorMsg").innerHTML = "Erreur, veuillez saisir une adresse email valide";
-        return false;
-    };
+        erreur = true;
+    }
     
-    if (prenomRegex.test(prenom) && nomRegex.test(nom) && adresseRegex.test(adresse) && villeRegex.test(ville) && adresseMailRegex.test(adresseMail) )
+    if (!erreur)
     {
         validateOrder();
     }
-    else { alert("Veuillez remplir correctement le formulaire s'il vous plait ! ");
-                document.getElementById("firstNameErrorMsg").innerHTML = "";
-                document.getElementById("lastNameErrorMsg").innerHTML = "";
-                document.getElementById("addressErrorMsg").innerHTML = "";
-                document.getElementById("cityErrorMsg").innerHTML = "";
-                document.getElementById("emailErrorMsg").innerHTML = "";
-    };
 }
 
 
@@ -247,7 +241,6 @@ function validateOrder() {   //fonction de validation de la commande
     let produitsId = [];
     Object.values(localStorage).forEach(function(objet){
         let JSONobjet = JSON.parse(objet);
-        //produitsId = produitsId.concat([JSONobjet.id]) ;
         produitsId.push(JSONobjet.id)
     });
 
@@ -272,7 +265,7 @@ function validateOrder() {   //fonction de validation de la commande
             if (res.ok) {
                 return res.json();
             } else {
-                console.log("Erreur");
+                console.log("Erreur API");
             }
         })
         .then(function (response) {
@@ -284,7 +277,7 @@ function validateOrder() {   //fonction de validation de la commande
             }
         )
         .catch(function (err) {
-            // Une erreur est survenue
+            console.log(err);
         });
 }
 
